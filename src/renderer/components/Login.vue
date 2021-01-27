@@ -4,30 +4,26 @@
       <h2 class="title"><img :src="logo" alt="logo" /></h2>
       <el-form :model="mac" ref="mac">
         <el-form-item
-          prop="accessKey"
+          prop="username"
           :rules="{
             required: true,
-            message: 'AccessKey 为空或者错误',
+            message: '账号为空或者错误',
             trigger: 'blur',
           }"
         >
-          <el-input
-            v-model="mac.accessKey"
-            placeholder="请输入 AccessKey"
-            type="password"
-          ></el-input>
+          <el-input v-model="mac.username" placeholder="请输入账号"></el-input>
         </el-form-item>
         <el-form-item
-          prop="secretKey"
+          prop="password"
           :rules="{
             required: true,
-            message: 'SecretKey 为空或者错误',
+            message: '密码为空或者错误',
             trigger: 'blur',
           }"
         >
           <el-input
-            v-model="mac.secretKey"
-            placeholder="请输入 SecretKey"
+            v-model="mac.password"
+            placeholder="请输入密码"
             type="password"
           ></el-input>
         </el-form-item>
@@ -46,7 +42,7 @@
 </template>
 
 <script>
-import { getBucketList } from "@/service/getData.js";
+import { getAccount } from "@/service/getData.js";
 import { logo } from "@/assets/image.js";
 import { getToken } from "@/utils/common";
 
@@ -54,8 +50,12 @@ export default {
   data() {
     return {
       mac: {
-        accessKey: "",
-        secretKey: "",
+        username: "",
+        password: "",
+        // objectId: "",
+        // call: "",
+        // company:"",
+        // role:""
       },
       submitState: false,
       logo: "",
@@ -68,7 +68,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.getBucket();
+          this.getLogin();
         } else {
           return false;
         }
@@ -77,15 +77,21 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-    getBucket() {
+    getLogin() {
       this.submitState = true;
-      getBucketList(this.mac)
-        .then(() => {
+      getAccount(this.mac.username, this.mac.password)
+        .then((res) => {
+          
           this.submitState = false;
           this.$electron.ipcRenderer.send("bucketsList", {
-            accessKey: this.mac.accessKey,
-            secretKey: this.mac.secretKey,
+            username: this.mac.username,
+            password: this.mac.password,
           });
+          this.mac.objectId = res.objectId;
+          this.mac.call = res.call;
+          this.mac.company=res.company;
+          this.mac.role=res.role;
+          console.log(this.mac);
           this.$store.dispatch("SetToken", this.mac);
           this.$electron.ipcRenderer.send("switchToHome");
         })

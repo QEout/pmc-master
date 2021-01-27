@@ -1,8 +1,8 @@
-# 七牛客户端
+# 物料编码大师客户端
 
 ### 项目说明
 
-基于 electron-vue + element ui 七牛客户端
+基于 electron-vue + element ui 物料编码大师客户端
 
 ### 项目截图
 

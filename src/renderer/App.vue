@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "qiniu"
+  name: "pmc-master"
 };
 </script>
 

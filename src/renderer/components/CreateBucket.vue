@@ -1,63 +1,53 @@
 <template>
   <section>
-    <h4 class="title">存储空间列表
-      <i
-        class="el-icon-plus add"
-        @click="dialogVisible = true"
-      ></i>
+    <h4 class="title">
+      物料空间列表
+      <i class="el-icon-plus add" @click="dialogVisible = true"></i>
     </h4>
-    <el-dialog
-      title="添加存储空间"
-      :visible.sync="dialogVisible"
-      width="40%"
-    >
-      <el-form
-        ref="createBucket"
-        :model="form"
-        size="small"
-      >
+    <el-dialog title="添加物料空间" :visible.sync="dialogVisible" width="40%">
+      <el-form ref="createBucket" :model="form" size="small">
         <el-form-item
-          label="存储空间名称"
-          prop="name"
-          :rules="{ required: true, message: '存储空间名称为空', trigger: 'blur' }"
+          label="物料空间名称"
+          prop="title"
+          :rules="{
+            required: true,
+            message: '物料空间名称为空',
+            trigger: 'blur',
+          }"
         >
           <el-input
-            v-model="form.name"
-            placeholder="请输入存储空间名称"
+            v-model="form.title"
+            placeholder="请输入物料空间名称"
           ></el-input>
         </el-form-item>
-        <el-form-item
-          label="存储区域"
-          prop="region"
-          :rules="{ required: true, message: '存储区域为空', trigger: 'blur' }"
+       <el-form-item
+          label="描述"
+          prop="description"
         >
-          <el-select
-            v-model="form.region"
-            placeholder="请选择存储区域"
-            style="width: 100%"
-          >
-            <el-option
-              :label="value"
-              :value="key"
-              v-for="(value, key) in regionList"
-              :key="key"
-            ></el-option>
-          </el-select>
+          <el-input
+            v-model="form.description"
+            placeholder="请输入描述"
+          ></el-input>
+        </el-form-item>
+       <el-form-item
+          label="排序"
+          prop="sort"
+           :rules="{ type: 'number', message: '必须为数字值'}"
+        >
+          <el-input
+            v-model.number="form.sort"
+            placeholder="请输入排序，数字越小越靠前"
+          ></el-input>
         </el-form-item>
       </el-form>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          size="mini"
-          @click="cancel('createBucket')"
-        >取 消</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="cancel('createBucket')">取 消</el-button>
         <el-button
           size="mini"
           type="primary"
           @click="submitForm('createBucket')"
-        >确 定</el-button>
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
   </section>
@@ -69,29 +59,20 @@ export default {
     return {
       dialogVisible: false,
       form: {
-        name: "",
-        region: ""
+        title: "",
+        description: "",
+        sort:1
       },
-      regionList: {
-        z0: "华东",
-        z1: "华北",
-        z2: "华南",
-        na0: "北美",
-        as0: "东南亚"
-      }
     };
   },
   methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$store
-            .dispatch("CreateBucket", {
-              name: this.form.name,
-              region: this.form.region
-            })
-            .then(it => {
-              if (it.status === 200) {
+            .dispatch("CreateBucket", this.form)
+            .then((it) => {
+              if (it) {
                 this.$message.success("添加成功");
                 this.cancel("createBucket");
               }
@@ -110,17 +91,21 @@ export default {
     cancel(formName) {
       this.resetForm(formName);
       this.dialogVisible = false;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .title {
   font-weight: normal;
-  font-size: 12px;
-  padding: 10px;
-  color: #909399;
+  font-size: 14px;
+  padding:14px 5px 16px 20px;
+  // padding-bottom: 16px;
+      border-bottom: 1px solid #EBEEF5;
+  background: #ecf5ff;
+  color: #409eff;
+  font-weight: bold;
   overflow: hidden;
   .add {
     float: right;

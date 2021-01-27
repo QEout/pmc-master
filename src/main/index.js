@@ -1,7 +1,7 @@
 // app：控制应用生命周期的模块
 // BrowserWindow：创建本地浏览器窗口的模块
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
-import template from "./config/menu";
+// import template from "./config/menu";
 // 加载地址
 const loginURL =
   process.env.NODE_ENV === "development"
@@ -17,7 +17,7 @@ const homeURL =
 let defaultWindowConfig = {
   useContentSize: true,
   titleBarStyle: "hidden",
-  resizable: false,
+  resizable:true,
   webPreferences: {
     webSecurity: false
   }
@@ -25,6 +25,7 @@ let defaultWindowConfig = {
 let mainWin;
 
 function createWindow(config) {
+  Menu.setApplicationMenu(null)
   // 创建一个新窗口
   mainWin = new BrowserWindow({
     ...defaultWindowConfig,
@@ -34,11 +35,20 @@ function createWindow(config) {
   });
   // 默认加载登录界面
   mainWin.loadURL(loginURL);
+    // Open dev tools initially when in development mode
+  if (process.env.NODE_ENV === "development") {
+    mainWin.webContents.on("did-frame-finish-load", () => {
+      mainWin.webContents.once("devtools-opened", () => {
+        mainWin.focus();
+      });
+      mainWin.webContents.openDevTools();
+    });
+  }
   // 当窗口关闭时调用的方法
   mainWin.on("closed", () => {
     mainWin = null;
   });
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  // Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
 // electron 初始化完成后
@@ -63,6 +73,7 @@ app.on("activate", () => {
 ipcMain.on("switchToHome", () => {
   mainWin.loadURL(homeURL);
   mainWin.setContentSize(980, 650);
+  mainWin.center();
   
 });
 ipcMain.on("switchToLogin", () => {

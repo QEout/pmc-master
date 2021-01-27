@@ -5,7 +5,7 @@ export default [
     label: "Application",
     submenu: [
       {
-        label: "关于七牛",
+        label: "关于物料编码大师",
         selector: "orderFrontStandardAboutPanel:"
       },
       { type: "separator" },
